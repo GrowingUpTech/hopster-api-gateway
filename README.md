@@ -1,4 +1,5 @@
 # hopster-api-gateway
+API gateway serves as an entry point for client requests, providing routing, load balancing, and other cross-cutting concerns for communication between clients and backend services in a microservices architecture.
 ## Prerequisites
  - Java JDK 22 
  - Maven 3.9.5
@@ -27,4 +28,6 @@
 - Service 2: Physical Activity Service
 - Service 3: Support Behaviour Service
 
-
+## Additional Information
+- The API Gateway routes requests to the appropriate service based on the requested path.
+- Update the ServiceDiscoveryService to include actual service discovery logic.
