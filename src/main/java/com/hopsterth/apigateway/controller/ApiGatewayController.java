@@ -6,14 +6,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
 
 import com.hopsterth.apigateway.service.ServiceDiscoveryService;
+import com.hopsterth.apigateway.middleware.RouteMiddleware;
 
 @RestController
 public class ApiGatewayController {
 
     private final ServiceDiscoveryService serviceDiscoveryService;
+    private final RouteMiddleware routeMiddleware;
 
-    public ApiGatewayController(ServiceDiscoveryService serviceDiscoveryService) {
+    @Autowired
+    public ApiGatewayController(ServiceDiscoveryService serviceDiscoveryService, RouteMiddleware routeMiddleware) {
         this.serviceDiscoveryService = serviceDiscoveryService;
+        this.routeMiddleware = routeMiddleware;
     }
 
     @GetMapping(value = "/")
@@ -21,9 +25,18 @@ public class ApiGatewayController {
         return ResponseEntity.ok("Hello from API Gateway!");
     }
 
-    @GetMapping(value = "/userservice")
-    public ResponseEntity<String> userServicServerResponse() {
-        String serviceUrl = serviceDiscoveryService.discoverService("UserService");
-        return ResponseEntity.ok("UserService URL: " + serviceUrl);
+    @GetMapping("/**")
+    public ServerResponse userServicServerResponse(ServerRequest request) {
+        String path = request.path();
+        String service = routeMiddleware.determineRoute(path);
+        if (service != null) {
+            String serviceUrl = serviceDiscoveryService.discoverService(service);
+            return ServerResponse.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(service + " URL: " + serviceUrl);
+        } else {
+            return ServerResponse.notFound().build();
+        }
     }
 }
+

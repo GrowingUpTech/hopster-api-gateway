@@ -11,6 +11,8 @@ public class RouteMiddleware {
             return "service1";
         } else if (path.startsWith("/service2")) {
             return "service2";
+        } else if (path.startsWith("/user")) {
+            return "UserService" ;
         }
         return null; // Return null if no route matches
     }
